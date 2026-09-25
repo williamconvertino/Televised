@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using Televised.Prototyping.Movement.Playtest;
+using Televised.Prototyping.Shared;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using A = Televised.Prototyping.Shared.EditorTools.PrototypeAssetBuilder;
 using B = Televised.Prototyping.Movement.EditorTools.MovementSandboxBuilder;
 
 namespace Televised.Prototyping.Movement.EditorTools
@@ -68,7 +70,7 @@ namespace Televised.Prototyping.Movement.EditorTools
                 return false;
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return false;
 
-            B.EnsureAssets(out Material mat, out Sprite circle);
+            A.EnsureAssets(out Material mat, out Sprite circle);
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             new GameObject(VersionMarker); // lets the auto-builder detect outdated scenes
@@ -87,11 +89,11 @@ namespace Televised.Prototyping.Movement.EditorTools
             var sandboxCam = camGo.AddComponent<SandboxCamera>();
 
             // Player.
-            var player = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(B.PlayerPrefabPath), scene);
+            var player = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(A.PlayerPrefabPath), scene);
             player.name = "Player";
             player.transform.position = new Vector3(-5f, 1f, 0f);
             var motor = player.GetComponent<PlayerMotor2D>();
-            B.Set(sandboxCam, "target", player.transform);
+            A.Set(sandboxCam, "target", player.transform);
             var camSo = new SerializedObject(sandboxCam);
             camSo.FindProperty("size").floatValue = 9f;
             camSo.ApplyModifiedPropertiesWithoutUndo();
@@ -116,7 +118,7 @@ namespace Televised.Prototyping.Movement.EditorTools
             debugGo.AddComponent<MeshRenderer>().sharedMaterial = mat;
             debugGo.AddComponent<DebugLines>();
             var debugRenderer = debugGo.AddComponent<MovementDebugRenderer>();
-            B.Set(debugRenderer, "motor", motor);
+            A.Set(debugRenderer, "motor", motor);
 
             // Session.
             var session = new GameObject("PlaytestSession").AddComponent<PlaytestSession>();
@@ -729,7 +731,7 @@ namespace Televised.Prototyping.Movement.EditorTools
 
             public void Section(string name, string sign, Vector2 signPos)
             {
-                _group = B.Group(_root, $"{_root.childCount:00}_{name}");
+                _group = A.Group(_root, $"{_root.childCount:00}_{name}");
                 if (!string.IsNullOrEmpty(sign)) Sign(sign, signPos);
             }
 
@@ -824,7 +826,7 @@ namespace Televised.Prototyping.Movement.EditorTools
             /// <summary>Lava under the whole course (falling anywhere = back to the last checkpoint).</summary>
             public void Lava()
             {
-                _group = B.Group(_root, "Lava");
+                _group = A.Group(_root, "Lava");
                 HazBox(_minX - 15f, _maxX + 15f, _minY - 8f, _minY - 6f);
             }
         }
@@ -834,8 +836,8 @@ namespace Televised.Prototyping.Movement.EditorTools
         static RectangleSurfaceShape Rect(Transform parent, string name, float x, float y, float w, float h, float corner,
             Color fill, Color outline)
         {
-            var shape = B.Instance(B.RectPrefabPath, parent, name, x, y).GetComponent<RectangleSurfaceShape>();
-            B.Configure(shape, so =>
+            var shape = A.Instance(A.RectPrefabPath, parent, name, x, y).GetComponent<RectangleSurfaceShape>();
+            A.Configure(shape, so =>
             {
                 so.FindProperty("size").vector2Value = new Vector2(w, h);
                 so.FindProperty("cornerRadius").floatValue = corner;
@@ -847,8 +849,8 @@ namespace Televised.Prototyping.Movement.EditorTools
 
         static EllipseSurfaceShape Circle(Transform parent, string name, float x, float y, float r, Color fill, Color outline)
         {
-            var shape = B.Instance(B.EllipsePrefabPath, parent, name, x, y).GetComponent<EllipseSurfaceShape>();
-            B.Configure(shape, so =>
+            var shape = A.Instance(A.EllipsePrefabPath, parent, name, x, y).GetComponent<EllipseSurfaceShape>();
+            A.Configure(shape, so =>
             {
                 so.FindProperty("radii").vector2Value = new Vector2(r, r);
                 so.FindProperty("segments").intValue = Mathf.Clamp(Mathf.RoundToInt(r * 40f), 24, 128);
@@ -860,8 +862,8 @@ namespace Televised.Prototyping.Movement.EditorTools
 
         static void Blob(Transform parent, string name, float x, float y, int seed, float r)
         {
-            var shape = B.Instance(B.BlobPrefabPath, parent, name, x, y).GetComponent<OrganicSurfaceGenerator>();
-            B.Configure(shape, so =>
+            var shape = A.Instance(A.BlobPrefabPath, parent, name, x, y).GetComponent<OrganicSurfaceGenerator>();
+            A.Configure(shape, so =>
             {
                 so.FindProperty("seed").intValue = seed;
                 so.FindProperty("radius").floatValue = r;

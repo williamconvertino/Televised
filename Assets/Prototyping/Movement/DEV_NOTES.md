@@ -2,7 +2,8 @@
 
 Things worth knowing about how the prototype is built, what hasn't been verified yet, known limits,
 and a log of changes. Controls and the script map are in [`README.md`](README.md). The original design
-brief is `Assets/Prototyping/MOVEMENT_PROTOTYPE_README.md`.
+brief is [`MOVEMENT_PROTOTYPE_README.md`](MOVEMENT_PROTOTYPE_README.md). The shared scripts and assets live in
+`Assets/Prototyping/Shared/`.
 
 ---
 
@@ -19,7 +20,8 @@ brief is `Assets/Prototyping/MOVEMENT_PROTOTYPE_README.md`.
 
 ## How generation works
 
-- **Built by an editor script, not hand-written YAML.** `Editor/MovementSandboxBuilder.cs` generates:
+- **Built by editor scripts, not hand-written YAML.** `Shared/Scripts/Editor/PrototypeAssetBuilder.cs` generates
+  these under `Shared/`, and `Movement/Scripts/Editor/MovementSandboxBuilder.cs` builds the scene:
   - `Sprites/Circle.png`
   - `Materials/PrototypeUnlit.mat` (URP 2D Sprite-Unlit)
   - `Settings/DefaultMovementTuning.asset`
@@ -36,7 +38,7 @@ brief is `Assets/Prototyping/MOVEMENT_PROTOTYPE_README.md`.
 
 ## Tuning
 
-- **Where tuning lives.** All gameplay tuning lives in `Settings/DefaultMovementTuning.asset`.
+- **Where tuning lives.** All gameplay tuning lives in `Shared/Settings/DefaultMovementTuning.asset`.
 - **Play Mode changes are thrown away by default.** At the start of Play Mode the player makes a runtime
   copy of the asset, and everything edits that copy: the on-screen panel, the F1–F4 hotkeys, and the
   Inspector on the copy. The asset on disk isn't touched, so you can experiment freely.

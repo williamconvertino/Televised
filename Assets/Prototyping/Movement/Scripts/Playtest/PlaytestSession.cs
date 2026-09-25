@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Televised.Prototyping.Shared;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

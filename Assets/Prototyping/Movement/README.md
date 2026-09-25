@@ -1,6 +1,8 @@
 # Movement Prototype — Usage
 
-This folder implements the prototype described in `Assets/Prototyping/MOVEMENT_PROTOTYPE_README.md`.
+This folder implements the prototype described in [`MOVEMENT_PROTOTYPE_README.md`](MOVEMENT_PROTOTYPE_README.md).
+The player, surfaces, prefabs, material and tuning asset are shared by all prototypes and live in
+[`../Shared/`](../Shared/README.md). This folder only holds the movement scenes, the playtest and the notes.
 
 ## Getting started
 
@@ -31,7 +33,7 @@ A playtest level with 28 movement configurations, ratings and a results summary 
 | R, 1–9, T | Respawn, jump to a spawn point, teleport to the cursor |
 | C, scroll wheel | Overview camera, zoom |
 
-All tuning lives in `Settings/DefaultMovementTuning.asset`. By default, changes you make in Play Mode edit a
+All tuning lives in `Shared/Settings/DefaultMovementTuning.asset`. By default, changes you make in Play Mode edit a
 runtime copy and are **discarded** when you stop playing. To keep them, tick **Persist changes to asset** or
 click **Save to asset** in the panel. See `DEV_NOTES.md` for details.
 
@@ -57,6 +59,8 @@ click **Save to asset** in the panel. See `DEV_NOTES.md` for details.
 
 ## Script map
 
+Paths are relative to `Shared/Scripts/` unless noted. The playtest scripts are in `Movement/Scripts/Playtest/`.
+
 | Script | Responsibility |
 |---|---|
 | `Surfaces/Surface2D` | Closed polygon path. Closest sample, sample at path position, chord ("two feet") frame, smoothed normals |
@@ -71,7 +75,8 @@ click **Save to asset** in the panel. See `DEV_NOTES.md` for details.
 | `Legs/ProceduralLegRig` | Cosmetic 2-bone-IK legs: planting, alternating steps, attach reach, airborne tuck, anticipation |
 | `Generation/*SurfaceShape`, `OrganicSurfaceGenerator` | Rounded rectangles, ellipses and seeded blobs. Each shape generates its Surface2D, collider and mesh |
 | `Debug/*` | Game-view debug lines, tuning panel, camera, spawn points |
-| `Editor/MovementSandboxBuilder` | Generates the assets, prefabs and scene. Also adds GameObject ▸ Prototyping ▸ Movement create menus |
+| `Editor/PrototypeAssetBuilder` | Generates the shared assets and prefabs. Also adds GameObject ▸ Prototyping ▸ Surfaces create menus |
+| `Editor/MovementSandboxBuilder` (in `Movement/`) | Builds the sandbox scene (and regenerates the shared assets first) |
 
 ## Notes
 

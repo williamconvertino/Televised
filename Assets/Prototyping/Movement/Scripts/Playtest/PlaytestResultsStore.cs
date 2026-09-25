@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Televised.Prototyping.Shared;
 using UnityEngine;
 
 namespace Televised.Prototyping.Movement.Playtest
