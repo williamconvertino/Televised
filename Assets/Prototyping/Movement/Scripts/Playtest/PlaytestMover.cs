@@ -4,7 +4,8 @@ using UnityEngine;
 namespace Televised.Prototyping.Movement.Playtest
 {
     /// <summary>
-    /// Moves a surface (platform, stepping stone, hazard) on a smooth ping-pong path and/or spins it.
+    /// Moves a surface (platform, stepping stone, hazard) on a smooth ping-pong path and/or spins or swings it.
+    /// Put it on an empty parent to move several surfaces together (orbits, pendulums).
     /// Motion is a pure function of time, so it stays in sync however often courses are restarted.
     /// Surface2D picks up transform changes automatically, and an attached player is carried along
     /// (PlayerMotor2D resamples the surface every frame and inherits its velocity when jumping off).
@@ -20,6 +21,8 @@ namespace Televised.Prototyping.Movement.Playtest
         [Range(0f, 1f)] public float phase;
         [Tooltip("Degrees per second (counter-clockwise). 0 = no rotation.")]
         public float rotationSpeed;
+        [Tooltip("Pendulum swing: rotation oscillates ±this many degrees once per period (added to any spin). 0 = no swing.")]
+        public float swingAngle;
 
         Vector3 _startPos;
         Quaternion _startRot;
@@ -38,8 +41,12 @@ namespace Televised.Prototyping.Movement.Playtest
                 float k = 0.5f - 0.5f * Mathf.Cos((t / period + phase) * Mathf.PI * 2f);
                 transform.position = _startPos + (Vector3)(offset * k);
             }
-            if (rotationSpeed != 0f)
-                transform.rotation = _startRot * Quaternion.Euler(0f, 0f, rotationSpeed * t + phase * 360f);
+            if (rotationSpeed != 0f || swingAngle != 0f)
+            {
+                float angle = rotationSpeed != 0f ? rotationSpeed * t + phase * 360f : 0f;
+                angle += swingAngle * Mathf.Sin((t / period + phase) * Mathf.PI * 2f);
+                transform.rotation = _startRot * Quaternion.Euler(0f, 0f, angle);
+            }
         }
 
         void OnDrawGizmosSelected()

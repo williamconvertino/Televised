@@ -48,6 +48,8 @@ namespace Televised.Prototyping.Shared
         float _traveled, _targetDistance;
         bool _willHit, _bonk;
         SurfaceSample _target;
+        // Target / anchor in the surface's local space, so they ride along with moving or rotating surfaces.
+        Vector2 _targetLocal, _anchorLocal;
         float _cooldownUntil, _latchTime, _missFallTimer;
         Vector2 _tipVelocity;
 
@@ -76,6 +78,17 @@ namespace Televised.Prototyping.Shared
                 case GrappleState.Shooting:
                     if (PrototypeInput.GrappleCancelPressed) { BeginRetract(); break; }
                     _traveled += t.grappleShootSpeed * dt;
+                    if (_willHit && _target.surface != null)
+                    {
+                        // The target may be on a moving surface: steer the leg to where that point is now.
+                        _target.point = _target.surface.transform.TransformPoint(_targetLocal);
+                        Vector2 toTarget = _target.point - FireOrigin;
+                        if (toTarget.sqrMagnitude > 1e-8f)
+                        {
+                            FireDirection = toTarget.normalized;
+                            _targetDistance = toTarget.magnitude;
+                        }
+                    }
                     Vector2 nextTip = FireOrigin + FireDirection * Mathf.Min(_traveled, _targetDistance);
                     if (SweepLeg(m, nextTip, out SurfaceSample swept))
                     {
@@ -99,6 +112,7 @@ namespace Televised.Prototyping.Shared
                     break;
 
                 case GrappleState.Latched:
+                    if (AnchorSurface != null) AnchorPoint = AnchorSurface.transform.TransformPoint(_anchorLocal);
                     TipPosition = AnchorPoint;
                     IsReeling = t.grappleMode == GrappleMode.SwingPull && PrototypeInput.GrappleHeld;
                     if (t.grappleMode == GrappleMode.Pull && PrototypeInput.GrapplePressed)
@@ -255,6 +269,7 @@ namespace Televised.Prototyping.Shared
             AnchorSurface = null;
 
             _willHit = FindTarget(m, t, m.AimDirection, out _target, out float dist, out Vector2 dir, out float bonkDist);
+            if (_willHit) _targetLocal = _target.surface.transform.InverseTransformPoint(_target.point);
             _bonk = !_willHit && bonkDist > 0f;
             FireDirection = _willHit ? dir : m.AimDirection;
             _targetDistance = _willHit ? dist : _bonk ? bonkDist : t.grappleMaxDistance;
@@ -266,6 +281,7 @@ namespace Televised.Prototyping.Shared
             State = GrappleState.Latched;
             AnchorPoint = _target.point;
             AnchorSurface = _target.surface;
+            _anchorLocal = AnchorSurface.transform.InverseTransformPoint(AnchorPoint);
             RopeLength = Mathf.Clamp(Vector2.Distance(m.Position, AnchorPoint), m.Radius * 0.95f, t.grappleMaxDistance);
             _latchTime = Time.time;
             Latched?.Invoke(this);

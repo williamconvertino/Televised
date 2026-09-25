@@ -284,6 +284,29 @@ The arena is a floor, a ceiling and two walls, about 64 × 26 units. Inside it:
 Number keys 1–9 jump to the spawn points, in this order: Floor, CompassCenter, LargeBlob, Cluster,
 UnderOverhang, ClosePair, TallNarrow, StretchedBlob, ConcaveBlob.
 
+## Sandbox 2 layout (moving objects)
+
+`Scenes/MovementSandbox2.unity`, built by `MovementSandbox2Builder`. Same arena idea, about 82 × 26 units.
+Static surfaces are blue, moving ones orange. All motion comes from `PlaytestMover`.
+
+| # | Area | Static | Moving |
+|---|---|---|---|
+| 1 | Elevator | Pedestal, tall ledge | Platform rising 6.2 beside the ledge |
+| 2 | Spinners | Stepping circle, ceiling stalactite | Spinning ellipse, spinning blob |
+| 3 | Ferry | Overhead circle, floor lump | Platform shuttling from the ledge to the windmill tower |
+| 4 | Windmill | Tower, hub, pillar, landing lump | Bar rotating around the hub (crawl between bar and hub) |
+| 5 | Orbit | Core circle | Three stones orbiting it (rotating parent pivot) |
+| 6 | Pendulum | Launch circle, right-wall ledge | Arm + platform swinging ±32° from the ceiling |
+| 7 | Bobbing stones | Stones 1, 3, 5 | Stones 2, 4 bob up and down, out of phase |
+| 8 | Sliding slab | Step-up circle, stretched blob, far circle | Slab sliding under the ceiling |
+
+Number keys 1–9: Start, Elevator, FerryLedge, WindmillTower, OrbitCore, PendulumLaunch, BobbingStones,
+Spinners, SlidingSlab.
+
+**Nothing can crush you.** The motor doesn't resolve a moving surface pushing into an attached player, so
+every mover is placed to keep at least a player's width of clearance from anything you could stand on.
+Keep that in mind when adding movers.
+
 ## Known limits
 
 - **Sharp inward corners.** A sharp inward (concave) corner inside a single shape can make the player
@@ -299,6 +322,15 @@ UnderOverhang, ClosePair, TallNarrow, StretchedBlob, ConcaveBlob.
   prefab or in Edit Mode.
 
 ## Change log
+
+### 2026-09-25: Sandbox 2 (moving objects)
+- New `Scenes/MovementSandbox2.unity`, built by `MovementSandbox2Builder` (**Prototyping ▸ Movement ▸ Rebuild /
+  Open Sandbox 2 (Moving Objects)**). It builds itself once, after the first sandbox exists. See "Sandbox 2 layout".
+- **Grapple on moving surfaces:** the anchor is stored in the surface's local space, so a latched grapple
+  moves and rotates with its surface. A leg in flight also steers toward where its target point is now.
+- `PlaytestMover.swingAngle`: pendulum swing (±degrees once per period). Default 0, so existing courses are unchanged.
+- `MovementSandboxBuilder`'s `Rect` / `Ellipse` / `Blob` helpers are now `internal`, return the created object,
+  and `Blob` takes optional colors.
 
 ### 2026-09-25: Movement fixes, surface angle limit, grapple button
 - A/D keep working on curves when the eye is sideways (curve lookahead in `SurfaceInputResolver`).

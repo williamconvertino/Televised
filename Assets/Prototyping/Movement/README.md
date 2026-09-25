@@ -10,6 +10,9 @@ The player, surfaces, prefabs, material and tuning asset are shared by all proto
    `Scenes/MovementSandbox.unity` automatically. It may first ask you to save the scene you have open.
 2. If that doesn't happen, or you want a fresh copy, use **Prototyping ▸ Movement ▸ Rebuild Sandbox (Assets + Scene)**.
 3. Open `Scenes/MovementSandbox.unity` and press Play.
+4. For moving surfaces, open `Scenes/MovementSandbox2.unity` (**Prototyping ▸ Movement ▸ Open Sandbox 2 (Moving
+   Objects)**). It mixes static surfaces (blue) with moving, spinning and swinging ones (orange). It builds itself
+   automatically once the first sandbox exists; rebuild it with **Rebuild Sandbox 2 (Moving Objects)**.
 
 ## Playtesting
 
@@ -80,6 +83,8 @@ Paths are relative to `Shared/Scripts/` unless noted. The playtest scripts are i
 | `Debug/*` | Game-view debug lines, tuning panel, camera, spawn points |
 | `Editor/PrototypeAssetBuilder` | Generates the shared assets and prefabs. Also adds GameObject ▸ Prototyping ▸ Surfaces create menus |
 | `Editor/MovementSandboxBuilder` (in `Movement/`) | Builds the sandbox scene (and regenerates the shared assets first) |
+| `Editor/MovementSandbox2Builder` (in `Movement/`) | Builds sandbox 2, the static + moving surfaces scene |
+| `Playtest/PlaytestMover` (in `Movement/`) | Moves, spins or swings a surface (or an empty parent holding several) as a function of time |
 
 ## Notes
 

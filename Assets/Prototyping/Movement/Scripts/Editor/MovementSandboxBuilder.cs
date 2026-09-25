@@ -203,7 +203,7 @@ namespace Televised.Prototyping.Movement.EditorTools
             Ellipse(compass, "Compass_Right", -9.8f, 8f, 1f, 1f, TestFill, TestOutline);
         }
 
-        static void Rect(Transform parent, string name, float x, float y, float w, float h, float corner, Color fill, Color outline)
+        internal static GameObject Rect(Transform parent, string name, float x, float y, float w, float h, float corner, Color fill, Color outline)
         {
             var go = Instance(RectPrefabPath, parent, name, x, y);
             var shape = go.GetComponent<RectangleSurfaceShape>();
@@ -214,9 +214,10 @@ namespace Televised.Prototyping.Movement.EditorTools
                 so.FindProperty("fillColor").colorValue = fill;
                 so.FindProperty("outlineColor").colorValue = outline;
             });
+            return go;
         }
 
-        static void Ellipse(Transform parent, string name, float x, float y, float rx, float ry, Color fill, Color outline)
+        internal static GameObject Ellipse(Transform parent, string name, float x, float y, float rx, float ry, Color fill, Color outline)
         {
             var go = Instance(EllipsePrefabPath, parent, name, x, y);
             var shape = go.GetComponent<EllipseSurfaceShape>();
@@ -227,10 +228,11 @@ namespace Televised.Prototyping.Movement.EditorTools
                 so.FindProperty("fillColor").colorValue = fill;
                 so.FindProperty("outlineColor").colorValue = outline;
             });
+            return go;
         }
 
-        static void Blob(Transform parent, string name, float x, float y, int seed, float radius, float variation,
-            float sx, float sy, int points, float smoothing, float asymmetry = 0.15f)
+        internal static GameObject Blob(Transform parent, string name, float x, float y, int seed, float radius, float variation,
+            float sx, float sy, int points, float smoothing, float asymmetry = 0.15f, Color? fill = null, Color? outline = null)
         {
             var go = Instance(BlobPrefabPath, parent, name, x, y);
             var shape = go.GetComponent<OrganicSurfaceGenerator>();
@@ -245,9 +247,10 @@ namespace Televised.Prototyping.Movement.EditorTools
                 so.FindProperty("smoothing").floatValue = smoothing;
                 so.FindProperty("asymmetry").floatValue = asymmetry;
                 so.FindProperty("sampleCount").intValue = Mathf.Clamp(Mathf.RoundToInt(radius * Mathf.Max(sx, sy) * 40f), 48, 256);
-                so.FindProperty("fillColor").colorValue = BlobFill;
-                so.FindProperty("outlineColor").colorValue = BlobOutline;
+                so.FindProperty("fillColor").colorValue = fill ?? BlobFill;
+                so.FindProperty("outlineColor").colorValue = outline ?? BlobOutline;
             });
+            return go;
         }
     }
 
