@@ -15,8 +15,9 @@ namespace Televised.Prototyping.Shared
     }
 
     /// <summary>
-    /// Grapple leg state machine. Targeting happens once at fire time (ray + optional aim-assist rays
+    /// Grapple leg state machine. Targeting happens at fire time (ray + optional aim-assist rays
     /// against Surface2D outlines); the tip then travels out at shoot speed and latches when it arrives.
+    /// While it travels, the leg (eye to tip) also latches onto any surface that moves or is carried into it.
     /// The motor asks this component for airborne velocity changes (Pull) and the rope constraint (Swing).
     /// Visuals (the stretched leg) are drawn by ProceduralLegRig from <see cref="TipPosition"/>.
     /// </summary>
@@ -33,7 +34,7 @@ namespace Televised.Prototyping.Shared
         public Surface2D AnchorSurface { get; private set; }
         public float RopeLength { get; private set; }
         public float TimeLatched => IsLatched ? Time.time - _latchTime : 0f;
-        /// <summary>SwingPull: true while LMB is held and the rope is reeling in; false = swinging freely.</summary>
+        /// <summary>SwingPull: true while the grapple button is held and the rope is reeling in; false = swinging freely.</summary>
         public bool IsReeling { get; private set; }
 
         // Idle-time preview of what a click would hit (for debug drawing).
@@ -75,6 +76,15 @@ namespace Televised.Prototyping.Shared
                 case GrappleState.Shooting:
                     if (PrototypeInput.GrappleCancelPressed) { BeginRetract(); break; }
                     _traveled += t.grappleShootSpeed * dt;
+                    Vector2 nextTip = FireOrigin + FireDirection * Mathf.Min(_traveled, _targetDistance);
+                    if (SweepLeg(m, nextTip, out SurfaceSample swept))
+                    {
+                        // Something came into the leg's path (the player moved, or a platform did): hook it.
+                        _target = swept;
+                        TipPosition = swept.point;
+                        Latch(m, t);
+                        break;
+                    }
                     if (_traveled >= _targetDistance)
                     {
                         TipPosition = FireOrigin + FireDirection * _targetDistance;
@@ -113,8 +123,9 @@ namespace Televised.Prototyping.Shared
                     }
                     else if (t.grappleMode == GrappleMode.Swing)
                     {
+                        // Reel all the way to contact (like SwingPull) so reeling in lets the player attach.
                         float reel = PrototypeInput.MoveVector.y * t.grappleReelSpeed * dt;
-                        RopeLength = Mathf.Clamp(RopeLength - reel, t.grappleMinRopeLength, t.grappleMaxDistance);
+                        RopeLength = Mathf.Clamp(RopeLength - reel, m.Radius * 0.95f, t.grappleMaxDistance);
                     }
                     break;
 
@@ -124,10 +135,12 @@ namespace Televised.Prototyping.Shared
                         _missFallTimer -= dt;
                         _tipVelocity += Vector2.down * (t.gravity * dt);
                         TipPosition += _tipVelocity * dt;
+                        ClampTipToRange(m, t);
                     }
                     else
                     {
                         TipPosition = Vector2.MoveTowards(TipPosition, m.Position, t.grappleRetractSpeed * dt);
+                        ClampTipToRange(m, t);
                         if ((TipPosition - m.Position).sqrMagnitude < 0.01f)
                         {
                             State = GrappleState.Idle;
@@ -253,8 +266,7 @@ namespace Televised.Prototyping.Shared
             State = GrappleState.Latched;
             AnchorPoint = _target.point;
             AnchorSurface = _target.surface;
-            float minRope = t.grappleMode == GrappleMode.SwingPull ? m.Radius * 0.95f : t.grappleMinRopeLength;
-            RopeLength = Mathf.Clamp(Vector2.Distance(m.Position, AnchorPoint), minRope, t.grappleMaxDistance);
+            RopeLength = Mathf.Clamp(Vector2.Distance(m.Position, AnchorPoint), m.Radius * 0.95f, t.grappleMaxDistance);
             _latchTime = Time.time;
             Latched?.Invoke(this);
         }
@@ -275,6 +287,41 @@ namespace Televised.Prototyping.Shared
             IsReeling = false;
             _missFallTimer = 0f;
             AnchorSurface = null;
+        }
+
+        /// <summary>
+        /// The drooping / retracting tip never trails farther than max range from the eye: if the player
+        /// moves away, the tip is dragged along (and loses its outward speed relative to the player).
+        /// </summary>
+        void ClampTipToRange(PlayerMotor2D m, MovementTuning t)
+        {
+            Vector2 d = TipPosition - m.Position;
+            float len = d.magnitude;
+            if (len <= t.grappleMaxDistance || len < 1e-5f) return;
+            Vector2 n = d / len;
+            TipPosition = m.Position + n * t.grappleMaxDistance;
+            float outward = Vector2.Dot(_tipVelocity - m.Velocity, n);
+            if (outward > 0f) _tipVelocity -= n * outward;
+        }
+
+        /// <summary>
+        /// While shooting: does the leg, drawn from the eye to <paramref name="tip"/>, run into an attachable
+        /// surface? The surface the player stands on and non-attachable surfaces stop the check (no latching
+        /// through them). The fire-time target itself is handled by the normal arrival path.
+        /// </summary>
+        static bool SweepLeg(PlayerMotor2D m, Vector2 tip, out SurfaceSample hit)
+        {
+            hit = default;
+            Vector2 origin = m.Position;
+            Vector2 d = tip - origin;
+            float len = d.magnitude;
+            if (len < 1e-4f) return false;
+            // Stop just short of the tip so a planned hit still arrives through the regular path.
+            if (!RaycastAll(origin, d / len, len - 1e-3f, out SurfaceSample h)) return false;
+            Surface2D own = m.IsAttached ? m.CurrentSurface : null;
+            if (h.surface == own || !h.surface.Attachable) return false;
+            hit = h;
+            return true;
         }
 
         /// <summary>

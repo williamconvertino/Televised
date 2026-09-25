@@ -83,6 +83,8 @@ namespace Televised.Prototyping.Shared
         Vector2 _up = Vector2.up;
         Vector2 _tan = Vector2.left;
         Transform _container;
+        Surface2D _carrySurface;     // surface the feet were planted on last frame
+        Matrix4x4 _carryMatrix;      // its transform last frame
 
         public bool HideOtherLegsWhileGrappling
         {
@@ -229,6 +231,8 @@ namespace Televised.Prototyping.Shared
             bool grappling = grapple != null && grapple.IsActive;
             for (int i = 0; i < _legs.Length; i++) _legs[i].isGrapple = grappling && i == _legs.Length - 1;
 
+            CarryFeetWithSurface(attached ? motor.CurrentSurface : null);
+
             // Other legs are hidden only while the grapple is actually out/holding (not while it retracts).
             bool hideOthers = grappling && hideOtherLegsWhileGrappling &&
                               (grapple.State == GrappleState.Shooting || grapple.State == GrappleState.Latched);
@@ -252,6 +256,30 @@ namespace Televised.Prototyping.Shared
                 leg.foot.enabled = visible;
                 Draw(leg, Socket(leg, center));
             }
+        }
+
+        /// <summary>
+        /// Planted feet (and steps in progress) move with a moving / rotating surface, so they stay put
+        /// on it instead of lagging behind and re-stepping every frame.
+        /// </summary>
+        void CarryFeetWithSurface(Surface2D surface)
+        {
+            if (surface != null && surface == _carrySurface)
+            {
+                Matrix4x4 now = surface.transform.localToWorldMatrix;
+                if (now != _carryMatrix)
+                {
+                    Matrix4x4 delta = now * _carryMatrix.inverse;
+                    foreach (Leg leg in _legs)
+                    {
+                        if (leg.isGrapple) continue;
+                        leg.footPos = delta.MultiplyPoint3x4(leg.footPos);
+                        leg.stepFrom = delta.MultiplyPoint3x4(leg.stepFrom);
+                    }
+                }
+            }
+            _carrySurface = surface;
+            _carryMatrix = surface != null ? surface.transform.localToWorldMatrix : Matrix4x4.identity;
         }
 
         /// <summary>
@@ -356,6 +384,7 @@ namespace Televised.Prototyping.Shared
                 {
                     if (c.gap >= best || c.approachSpeed <= 0.5f) continue;
                     if (!c.Surface.Attachable) continue; // never reach for hazards / non-attachable surfaces
+                    if (!motor.Tuning.AllowsSurfaceNormal(c.sample.normal)) continue; // too steep to stick to
                     if (motor.Attachment != null && motor.Attachment.IsBlocked(c.Surface, motor.Tuning)) continue;
                     best = c.gap;
                     reach = c;

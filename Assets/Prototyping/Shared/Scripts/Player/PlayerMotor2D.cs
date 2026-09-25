@@ -103,6 +103,7 @@ namespace Televised.Prototyping.Shared
         Vector2 _attachOffset;
         float _attachTime = -999f, _detachTime = -999f;
         float _jumpBuffer;
+        bool _landingJumpQueued; // pressed during landingJumpDelay; fires when it ends
         Vector2 _platformVelocity;
         int _airJumpsUsed;
         MovementTuning _tuningAsset;
@@ -243,9 +244,16 @@ namespace Televised.Prototyping.Shared
             Vector2 carried = (cur.point + cur.normal * r) - (_sample.point + _sample.normal * r);
             _platformVelocity = carried / dt;
 
+            // The surface turned under us past the steepest angle we can hold (maxSurfaceAngle): let go.
+            if (!tuning.AllowsSurfaceNormal(cur.normal, 1f))
+            {
+                FallOff(cur);
+                return;
+            }
+
             // --- input -> signed path speed
             int sign = inputResolver.Resolve(PrototypeInput.MoveVector, PrototypeInput.MoveKeyPressedThisFrame,
-                cur.tangent, _smoothedNormal, tuning);
+                cur.tangent, _smoothedNormal, tuning, _surface, _pathPos);
             float target = sign * tuning.surfaceMoveSpeed;
             bool reversing = sign != 0 && Mathf.Abs(_surfaceSpeed) > 0.01f && Mathf.Sign(_surfaceSpeed) != sign;
             float rate = sign != 0 && !reversing ? tuning.surfaceAcceleration : Mathf.Max(tuning.surfaceDeceleration, tuning.surfaceAcceleration);
@@ -273,6 +281,26 @@ namespace Televised.Prototyping.Shared
                 if (tuning.allowSurfaceTransfer && TryTransfer(cur, curCenter, nextCenter))
                     return;
 
+                if (!tuning.AllowsSurfaceNormal(next.normal))
+                {
+                    if (tuning.steepSurfaceBehavior == SteepSurfaceBehavior.FallOff)
+                    {
+                        FallOff(cur);
+                        return;
+                    }
+                    // Stop: advance only as far as the surface stays within the angle limit.
+                    float lo = 0f, hi = 1f, step = newPos - _pathPos;
+                    for (int i = 0; i < 8; i++)
+                    {
+                        float mid = (lo + hi) * 0.5f;
+                        if (tuning.AllowsSurfaceNormal(_surface.SampleAt(_pathPos + step * mid).normal)) lo = mid;
+                        else hi = mid;
+                    }
+                    newPos = _pathPos + step * lo;
+                    next = _surface.SampleAt(newPos);
+                    _surfaceSpeed = 0f;
+                }
+
                 _pathPos = _surface.WrapPathPosition(newPos);
                 cur = next;
             }
@@ -287,7 +315,22 @@ namespace Televised.Prototyping.Shared
 
             // --- jump preview & jump
             JumpResult preview = jumpResolver.Resolve(BuildJumpContext(), tuning);
-            if (_jumpBuffer > 0f) Jump(preview);
+            if (TimeSinceAttach < tuning.landingJumpDelay)
+            {
+                // Just landed: hold the press until the landing settles, instead of an instant re-jump.
+                if (_jumpBuffer > 0f) _landingJumpQueued = true;
+            }
+            else if (_jumpBuffer > 0f || _landingJumpQueued)
+            {
+                Jump(preview);
+            }
+        }
+
+        /// <summary>Let go of the current surface, keeping the crawl and platform motion.</summary>
+        void FallOff(in SurfaceSample at)
+        {
+            Vector2 v = at.tangent * _surfaceSpeed + _platformVelocity;
+            EnterAirborne(v, _surface);
         }
 
         bool TryTransfer(in SurfaceSample cur, Vector2 curCenter, Vector2 nextCenter)
@@ -303,6 +346,7 @@ namespace Televised.Prototyping.Shared
             {
                 SurfaceCandidate c = candidates[i];
                 if (c.Surface == _surface || !c.Surface.Attachable) continue;
+                if (!tuning.AllowsSurfaceNormal(c.sample.normal)) continue;
                 if (Vector2.Dot(moveDir, -c.sample.separation) < 0.2f) continue; // not crawling into it
                 if (c.gap < bestGap) { bestGap = c.gap; best = i; }
             }
@@ -342,6 +386,7 @@ namespace Televised.Prototyping.Shared
         void Jump(JumpResult jr)
         {
             _jumpBuffer = 0f;
+            _landingJumpQueued = false;
             Vector2 v = jr.direction * tuning.jumpSpeed + _sample.tangent * (_surfaceSpeed * tuning.inheritSurfaceVelocity)
                         + _platformVelocity * tuning.inheritPlatformVelocity;
 
@@ -493,6 +538,7 @@ namespace Televised.Prototyping.Shared
                 inputResolver.ClearLocks();
                 UpdateNormals(0f, true);
                 _attachTime = Time.time;
+                _landingJumpQueued = false;
                 _airJumpsUsed = 0;
                 grapple.NotifyPlayerAttached();
             }

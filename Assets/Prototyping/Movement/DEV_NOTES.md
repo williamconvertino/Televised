@@ -81,6 +81,15 @@ brief is [`MOVEMENT_PROTOTYPE_README.md`](MOVEMENT_PROTOTYPE_README.md). The sha
     suddenly reverse you on a curve.
   - **Releasing everything clears the lock.**
   - An ambiguous new press, such as adding W while on a flat floor, keeps the current lock.
+- **A/D on curves.** If A/D is ambiguous right where you are (the eye is sideways, so the bias and the
+  screen direction cancel) but the surface curves there, the resolver looks about a body width along the
+  path both ways and goes whichever way heads toward the key. Straight surfaces keep the old behavior
+  (no movement).
+- **Surface angle limit** (`maxSurfaceAngle`, default 180 = anywhere). The steepest surface the player can
+  stick to, measured between the surface normal and world up: 90 allows floors and walls but not
+  ceilings. `steepSurfaceBehavior` picks what crawling into a steeper part does: `Stop` (halt at the
+  limit) or `FallOff` (let go). Too-steep surfaces can't be landed on or transferred onto either, and if
+  a rotating platform tips you past the limit you fall off.
 - **SurfaceRelative:** only A/D count (D = clockwise by default, `invertSurfaceRelative` flips it).
   W/S do nothing in this mode.
 - **In the air:** air control is horizontal only (A/D); W/S have no effect while airborne.
@@ -150,15 +159,18 @@ Off by default. Toggle with F8 or in the panel (`enableAirJumps`).
 
 Off by default. Toggle with F9 or in the panel (`enableGrapple`).
 
-- **Firing (left mouse):**
+- **Firing (right mouse by default; swappable in the panel):**
   - **Targeting is decided on click.** A ray is cast toward the cursor. If that misses, extra rays at
     ±½ and ±1 × `grappleAimAssistAngle` (default 6°) are tried.
   - **What counts as a hit:** the first attachable surface within `grappleMaxDistance` (default 7). The
     surface you're standing on doesn't count.
-  - **The leg then travels out** at `grappleShootSpeed` and latches when it arrives. The debug overlay
+  - **The leg then travels out** at `grappleShootSpeed` and latches when it arrives. While it travels, if
+    the leg (drawn from the eye to the tip) runs into an attachable surface, because you moved or a
+    platform did, it latches there instead of passing through. The debug overlay
     shows a faint aim line to max range, and an orange circle where a click would latch.
 - **Missing:** the leg reaches max range, then retracts at `grappleRetractSpeed`. With `FallThenRetract`
-  (the default), it first droops under gravity for `grappleMissFallTime`.
+  (the default), it first droops under gravity for `grappleMissFallTime`. The retracting tip never
+  trails farther than `grappleMaxDistance` from the eye.
 - **Bonk:** if the aim ray's first hit is your own surface or a non-attachable one, the leg stops there
   and retracts.
 - **Pull mode (default):**
@@ -172,19 +184,20 @@ Off by default. Toggle with F9 or in the panel (`enableGrapple`).
 - **Swing mode:**
   - Latching makes a rope as long as your current distance to the anchor. The rope is a constraint:
     gravity and A/D air control swing you.
-  - W/S reel the rope in and out (`grappleReelSpeed`, down to `grappleMinRopeLength`).
+  - W/S reel the rope in and out (`grappleReelSpeed`). Reeling in goes all the way to contact, so you
+    attach to the anchor surface.
   - **You have to hold the button.** Releasing it lets go with your momentum, and you must still be holding
     when the leg arrives, or it releases straight away.
   - Touching any surface attaches you as usual.
 - **SwingPull mode (hybrid):** a rope with gravity on.
-  - **Hold LMB to reel in.** The rope shortens at `grappleSwingPullReelSpeed` (default 9), down to contact
+  - **Hold the grapple button to reel in.** The rope shortens at `grappleSwingPullReelSpeed` (default 9), down to contact
     distance. You swing slightly on the way (`grappleSwingPullSwingAmount`, default 0.35) and attach
     normally when you touch the surface.
-  - **Release LMB to swing freely** on the current rope length. `grappleSwingAmount` applies here
+  - **Release the button to swing freely** on the current rope length. `grappleSwingAmount` applies here
     (default 1, a free pendulum). W/S lengthen or shorten the rope at `grappleReelSpeed`, and A/D air
     control adds to the swing.
-  - **Hold LMB again to resume reeling.** Clicking doesn't re-fire in this mode.
-  - **Space lets go**, then air-jumps if you have one left. Right-click cancels.
+  - **Hold it again to resume reeling.** Clicking doesn't re-fire in this mode.
+  - **Space lets go**, then air-jumps if you have one left. The other mouse button cancels.
   - **No time limit:** the max pull time doesn't apply, so you can hang as long as you like.
   - The status box shows "(reeling)" or "(swinging)".
 - **Swing controls:**
@@ -198,7 +211,7 @@ Off by default. Toggle with F9 or in the panel (`enableGrapple`).
   - **Defaults leave both modes unchanged:** Swing Amount 1, and swinging while pulling off.
   - **Orbiting:** with swinging while pulling on and a high Swing Amount, a fast sideways approach can
     spiral around the anchor before it lands. The max pull time still releases you.
-- **Ending a grapple:** right-click cancels, Jump releases, and landing anywhere releases. Disabling the
+- **Ending a grapple:** the other mouse button cancels, Jump releases, and landing anywhere releases. Disabling the
   grapple mid-use retracts the leg.
 - **Cooldown:** `grappleCooldown` applies after the leg is fully retracted.
 - **Visuals:** the front leg (the last one in the rig) becomes the grapple leg while the grapple is out.
@@ -286,6 +299,18 @@ UnderOverhang, ClosePair, TallNarrow, StretchedBlob, ConcaveBlob.
   prefab or in Edit Mode.
 
 ## Change log
+
+### 2026-09-25: Movement fixes, surface angle limit, grapple button
+- A/D keep working on curves when the eye is sideways (curve lookahead in `SurfaceInputResolver`).
+- `landingJumpDelay` (default 0.1 s): a jump pressed right on landing waits until the landing settles,
+  then fires, instead of an instant skip.
+- Legs on moving/rotating platforms: planted feet and steps in progress move with the surface.
+- Swing mode: W reels in all the way to contact. `grappleMinRopeLength` was removed.
+- Missed grapple: the drooping/retracting tip stays within `grappleMaxDistance` of the eye.
+- Shooting grapple latches onto surfaces that come into the leg's path, instead of clipping through.
+- Grapple button: right mouse by default, swappable in the panel (`PrototypeInput.GrappleButton`,
+  saved in PlayerPrefs). Playtest hints show the current binding.
+- `maxSurfaceAngle` / `steepSurfaceBehavior`: limit which surfaces can be crawled on (default: all).
 
 ### 2026-09-24: Playtest: new Hard course, merged Medium, catalog order, hotkeys off in forms
 - **Hotkeys are off in forms.** `PrototypeInput.KeyboardBlocked` makes every keyboard read (and the

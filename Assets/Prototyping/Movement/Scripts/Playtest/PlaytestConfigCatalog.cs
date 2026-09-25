@@ -69,6 +69,8 @@ namespace Televised.Prototyping.Movement.Playtest
             // Fixed design decisions.
             t.surfaceMovementMode = SurfaceMovementMode.ScreenRelativeLocked;
             t.playerRadius = 0.5f;
+            t.maxSurfaceAngle = 180f;
+            t.steepSurfaceBehavior = SteepSurfaceBehavior.Stop;
 
             // Base A defaults (C01).
             t.jumpDirectionMode = JumpDirectionMode.ClampedCursorDirection;
@@ -93,6 +95,7 @@ namespace Televised.Prototyping.Movement.Playtest
             t.airMoveSpeed = 5f;
             t.airAcceleration = 30f;
             t.jumpBufferTime = 0.12f;
+            t.landingJumpDelay = 0.1f;
             t.cursorIntoSurface = CursorIntoSurfaceBehavior.ClampAboveSurface;
             t.cursorMinSurfaceAngle = 10f;
             t.normalSampleSpacing = 0.45f;
@@ -142,7 +145,6 @@ namespace Televised.Prototyping.Movement.Playtest
             t.grappleSwingPullReelSpeed = 9f;
             t.grappleSwingPullSwingAmount = 0.35f;
             t.grappleReelSpeed = 5f;
-            t.grappleMinRopeLength = 1f;
         }
 
         // Shared base overrides for feature configs.
@@ -363,42 +365,42 @@ namespace Televised.Prototyping.Movement.Playtest
                 new PlaytestConfig
                 {
                     id = "C23", title = "Grapple: Pull, on Base A", category = PlaytestCategory.Grapple,
-                    playerHint = HintClamped + " Left-click shoots a grappling leg that pulls you to where it hits. Right-click cancels.",
+                    playerHint = HintClamped + " {grappleClick} shoots a grappling leg that pulls you to where it hits. {cancelClick} cancels.",
                     hypothesis = "Point-to-point zipping alongside aimed jumps.",
                     apply = t => { BaseA(t); t.enableGrapple = true; t.grappleMode = GrappleMode.Pull; },
                 },
                 new PlaytestConfig
                 {
                     id = "C24", title = "Grapple: Pull, on Base B", category = PlaytestCategory.Grapple,
-                    playerHint = HintNormal + " Left-click shoots a grappling leg that pulls you to where it hits. Right-click cancels.",
+                    playerHint = HintNormal + " {grappleClick} shoots a grappling leg that pulls you to where it hits. {cancelClick} cancels.",
                     hypothesis = "Grapple as the only aimed movement tool.",
                     apply = t => { BaseB(t); t.enableGrapple = true; t.grappleMode = GrappleMode.Pull; },
                 },
                 new PlaytestConfig
                 {
                     id = "C25", title = "Grapple: Swing, on Base A", category = PlaytestCategory.Grapple,
-                    playerHint = HintClamped + " Hold left mouse to grapple and swing. W/S shorten/lengthen the rope. Release to let go.",
+                    playerHint = HintClamped + " Hold {grappleButton} to grapple and swing. W/S shorten/lengthen the rope. Release to let go.",
                     hypothesis = "Pendulum swinging: skillful and fun, or hard to control?",
                     apply = t => { BaseA(t); t.enableGrapple = true; t.grappleMode = GrappleMode.Swing; },
                 },
                 new PlaytestConfig
                 {
                     id = "C26", title = "Grapple: Swing, on Base B", category = PlaytestCategory.Grapple,
-                    playerHint = HintNormal + " Hold left mouse to grapple and swing. W/S shorten/lengthen the rope. Release to let go.",
+                    playerHint = HintNormal + " Hold {grappleButton} to grapple and swing. W/S shorten/lengthen the rope. Release to let go.",
                     hypothesis = "Swinging with surface-driven jumps.",
                     apply = t => { BaseB(t); t.enableGrapple = true; t.grappleMode = GrappleMode.Swing; },
                 },
                 new PlaytestConfig
                 {
                     id = "C27", title = "Grapple: SwingPull hybrid, on Base A", category = PlaytestCategory.Grapple,
-                    playerHint = HintClamped + " Hold left mouse to grapple and reel in. Release to swing freely (W/S adjust rope). Space lets go.",
+                    playerHint = HintClamped + " Hold {grappleButton} to grapple and reel in. Release to swing freely (W/S adjust rope). Space lets go.",
                     hypothesis = "Hybrid: controlled reel-in with swing freedom.",
                     apply = t => { BaseA(t); t.enableGrapple = true; t.grappleMode = GrappleMode.SwingPull; },
                 },
                 new PlaytestConfig
                 {
                     id = "C28", title = "Grapple: SwingPull hybrid, on Base B", category = PlaytestCategory.Grapple,
-                    playerHint = HintNormal + " Hold left mouse to grapple and reel in. Release to swing freely (W/S adjust rope). Space lets go.",
+                    playerHint = HintNormal + " Hold {grappleButton} to grapple and reel in. Release to swing freely (W/S adjust rope). Space lets go.",
                     hypothesis = "Hybrid grapple as the aiming tool.",
                     apply = t => { BaseB(t); t.enableGrapple = true; t.grappleMode = GrappleMode.SwingPull; },
                 },

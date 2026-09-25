@@ -74,7 +74,7 @@ namespace Televised.Prototyping.Shared
                 Surface2D s = c.Surface;
                 Vector2 into = -c.sample.separation; // from player toward the surface
 
-                c.blocked = !s.Attachable || IsBlocked(s, t);
+                c.blocked = !s.Attachable || IsBlocked(s, t) || !t.AllowsSurfaceNormal(c.sample.normal);
                 c.approachSpeed = Vector2.Dot(velocity, into);
 
                 c.inAttachRange = c.gap <= attachRange;

@@ -588,7 +588,7 @@ namespace Televised.Prototyping.Movement.Playtest
                             "You can skip a level, or stop this config, at any time.", _label);
             GUILayout.Space(8);
             GUILayout.Label("How it controls", _header);
-            GUILayout.Label("<b>WASD</b> crawl along surfaces.  " + _current.config.playerHint, _label);
+            GUILayout.Label("<b>WASD</b> crawl along surfaces.  " + PrototypeInput.FormatBindings(_current.config.playerHint), _label);
             GUILayout.Space(8);
             GUILayout.Label("<b>R</b> last checkpoint   <b>Backspace</b> restart   <b>N</b> skip to next checkpoint (if stuck)   <b>Esc</b> stop and rate", _hint);
             GUILayout.FlexibleSpace();
@@ -606,7 +606,7 @@ namespace Televised.Prototyping.Movement.Playtest
             GUILayout.BeginArea(_hudRect, _box);
             GUILayout.Label($"<b>Config {_current.config.id}</b>  ({_index + 1}/{_queue.Count}) · {CourseLabel(Course)}", _label);
             GUILayout.Label($"Time {PlaytestResultsStore.FormatTime(_time)}    Deaths {_deaths}    Checkpoint {_checkpoint}/{Course.checkpoints.Count}", _label);
-            GUILayout.Label(_current.config.playerHint, _hint);
+            GUILayout.Label(PrototypeInput.FormatBindings(_current.config.playerHint), _hint);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(_checkpoint < Course.checkpoints.Count ? "Next checkpoint  (N)" : "Skip to the end  (N)"))
                 SkipToNextCheckpoint();

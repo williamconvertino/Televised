@@ -38,6 +38,11 @@ namespace Televised.Prototyping.Shared
         [Range(0f, 0.9f)] public float minInputAlignment = 0.1f;
         [Tooltip("SurfaceRelative mode: false = D is clockwise, true = D is counter-clockwise.")]
         public bool invertSurfaceRelative = false;
+        [Tooltip("Steepest surface the player can stick to, as the angle between the surface normal and world up. " +
+                 "0 = flat floors only, 90 = floors and walls, 180 = anywhere (including ceilings).")]
+        [Range(0f, 180f)] public float maxSurfaceAngle = 180f;
+        [Tooltip("What happens when crawling reaches a surface steeper than Max Surface Angle.")]
+        public SteepSurfaceBehavior steepSurfaceBehavior = SteepSurfaceBehavior.Stop;
 
         [Header("Jump")]
         [Min(0f)] public float jumpSpeed = 9f;
@@ -46,6 +51,9 @@ namespace Televised.Prototyping.Shared
         [Tooltip("Fraction of a moving/rotating surface's velocity carried into the jump (1 = physically natural).")]
         [Range(0f, 1f)] public float inheritPlatformVelocity = 1f;
         [Min(0f)] public float jumpBufferTime = 0.1f;
+        [Tooltip("Jumps are held back until this long after landing (stops the 'skip' of an instant re-jump). " +
+                 "A press during this window is kept and fires when it ends.")]
+        [Min(0f)] public float landingJumpDelay = 0.1f;
         [Range(0f, 90f)] public float maxJumpAimAngle = 55f;
         public CursorIntoSurfaceBehavior cursorIntoSurface = CursorIntoSurfaceBehavior.ClampAboveSurface;
         [Range(0f, 89f)] public float cursorMinSurfaceAngle = 10f;
@@ -64,7 +72,7 @@ namespace Televised.Prototyping.Shared
         [Tooltip("If you're about to land (gap below this, moving toward the surface), a jump press waits and becomes a ground jump instead of spending an air jump.")]
         [Min(0f)] public float airJumpLandingGrace = 0.3f;
 
-        [Header("Grapple Leg (left mouse)")]
+        [Header("Grapple Leg (mouse button: see PrototypeInput.GrappleButton)")]
         public bool enableGrapple = false;
         public GrappleMode grappleMode = GrappleMode.Pull;
         [Min(0.5f)] public float grappleMaxDistance = 7f;
@@ -91,14 +99,13 @@ namespace Televised.Prototyping.Shared
         [Range(0f, 1f)] public float grappleSwingAmount = 1f;
         [Tooltip("How quickly swing motion is damped when Swing Amount is 0 (1/s). The damping rate is (1 - swingAmount) times this.")]
         [Min(0f)] public float grappleSwingDamping = 10f;
-        [Tooltip("SwingPull: how fast the rope reels in while LMB is held (units/s).")]
+        [Tooltip("SwingPull: how fast the rope reels in while the grapple button is held (units/s).")]
         [Min(0f)] public float grappleSwingPullReelSpeed = 9f;
         [Tooltip("SwingPull: how much swinging is allowed while reeling in (0 = almost straight, 1 = free pendulum). " +
-                 "When LMB is released, grappleSwingAmount applies instead.")]
+                 "When the grapple button is released, grappleSwingAmount applies instead.")]
         [Range(0f, 1f)] public float grappleSwingPullSwingAmount = 0.35f;
-        [Tooltip("Swing: W/S reel speed.")]
+        [Tooltip("Swing: W/S reel speed. Reeling in goes all the way to contact, so the player can attach.")]
         [Min(0f)] public float grappleReelSpeed = 4f;
-        [Min(0.1f)] public float grappleMinRopeLength = 1f;
 
         [Header("Smoothed / Virtual-Foot Normal")]
         [Tooltip("Half-distance between the two virtual contact samples along the path.")]
@@ -154,6 +161,10 @@ namespace Televised.Prototyping.Shared
         [Min(0f)] public float velocityWeight = 0.5f;
         [Min(0f)] public float cursorWeight = 0.3f;
         [Min(0f)] public float jumpDirectionWeight = 0.2f;
+
+        /// <summary>True if the player may stick to a surface with this outward normal (see maxSurfaceAngle).</summary>
+        public bool AllowsSurfaceNormal(Vector2 normal, float slack = 0f) =>
+            maxSurfaceAngle >= 180f || Vector2.Angle(Vector2.up, normal) <= maxSurfaceAngle + slack;
 
         /// <summary>Attach distance (Nearest/Magnetic) or contact tolerance (Strict) at the given velocity.</summary>
         public float EffectiveAttachDistance(Vector2 velocity)

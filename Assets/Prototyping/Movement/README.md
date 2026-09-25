@@ -22,8 +22,11 @@ A playtest level with 28 movement configurations, ratings and a results summary 
 |---|---|
 | W A S D (or arrow keys) | Crawl along the surface toward that screen direction (see `DEV_NOTES.md`) |
 | Space | Jump (in the air: double jump if enabled, and it releases a latched grapple) |
-| Left mouse | Fire the grapple leg (if enabled). Swing: hold to stay latched. SwingPull: hold to reel in, release to swing freely. W/S adjust the rope while swinging |
-| Right mouse | Cancel the grapple |
+| Right mouse | Fire the grapple leg (if enabled). Swing: hold to stay latched. SwingPull: hold to reel in, release to swing freely. W/S adjust the rope while swinging |
+| Left mouse | Cancel the grapple |
+
+The grapple button can be swapped to left mouse in the tuning panel's Grapple section (the other button
+then cancels). The choice is remembered between sessions.
 | Mouse | Eye aim (and the cursor-based jump modes) |
 | F1 / F2 / F3 / F4 | Cycle movement / jump / attachment / candidate-selection mode |
 | F5 | Toggle debug lines |

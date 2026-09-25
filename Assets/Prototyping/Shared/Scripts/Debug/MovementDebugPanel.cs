@@ -88,7 +88,7 @@ namespace Televised.Prototyping.Shared
             GUILayout.BeginArea(new Rect(10, screenH - 58, 900, 50));
             GUILayout.Label("<b>WASD/Arrows</b> crawl   <b>Space</b> jump   <b>Mouse</b> aim   <b>F1</b> move mode   <b>F2</b> jump mode   " +
                             "<b>F3</b> attach mode   <b>F4</b> selection   <b>F5</b> debug lines   <b>Tab/F6</b> panel   <b>F7</b> 2/4 legs   <b>F8</b> air jumps   <b>F9</b> grapple\n" +
-                            "<b>LMB</b> grapple (RMB cancel)   <b>R</b> respawn   <b>1-9</b> spawn points   <b>T</b> teleport to cursor   <b>C</b> overview camera   <b>Scroll</b> zoom", _label);
+                            $"<b>{GrappleBtn}</b> grapple ({CancelBtn} cancel)   <b>R</b> respawn   <b>1-9</b> spawn points   <b>T</b> teleport to cursor   <b>C</b> overview camera   <b>Scroll</b> zoom", _label);
             GUILayout.EndArea();
 
             if (!panelVisible) return;
@@ -101,6 +101,9 @@ namespace Televised.Prototyping.Shared
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
+
+        static string GrappleBtn => PrototypeInput.GrappleButton == GrappleMouseButton.Right ? "RMB" : "LMB";
+        static string CancelBtn => PrototypeInput.GrappleButton == GrappleMouseButton.Right ? "LMB" : "RMB";
 
         void DrawSurfaceLabels(float screenH)
         {
@@ -176,10 +179,15 @@ namespace Televised.Prototyping.Shared
             t.allowSurfaceTransfer = GUILayout.Toggle(t.allowSurfaceTransfer, " Crawl onto touching surfaces");
             t.screenAmbiguityBias = Slider("Surface-Relative Tie-Break", t.screenAmbiguityBias, 0f, 1f);
             t.minInputAlignment = Slider("Min Input Alignment", t.minInputAlignment, 0f, 0.9f);
+            t.maxSurfaceAngle = Slider(t.maxSurfaceAngle >= 180f ? "Max Surface Angle (anywhere)" : "Max Surface Angle (90 = walls)",
+                t.maxSurfaceAngle, 0f, 180f);
+            if (t.maxSurfaceAngle < 180f)
+                t.steepSurfaceBehavior = EnumButton("At the limit", t.steepSurfaceBehavior);
 
             GUILayout.Space(6);
             GUILayout.Label("Jump", _header);
             t.jumpSpeed = Slider("Jump Speed", t.jumpSpeed, 0f, 20f);
+            t.landingJumpDelay = Slider("Jump Delay After Landing (s)", t.landingJumpDelay, 0f, 0.3f);
             t.maxJumpAimAngle = Slider("Cursor Clamp Angle", t.maxJumpAimAngle, 0f, 90f);
             t.normalSampleSpacing = Slider("Normal Sample Spacing", t.normalSampleSpacing, 0.05f, 1.5f);
             t.normalSmoothing = Slider("Normal Smoothing (s)", t.normalSmoothing, 0f, 0.4f);
@@ -225,8 +233,9 @@ namespace Televised.Prototyping.Shared
             }
 
             GUILayout.Space(6);
-            GUILayout.Label("Grapple Leg (F9, LMB)", _header);
+            GUILayout.Label($"Grapple Leg (F9, {GrappleBtn})", _header);
             t.enableGrapple = GUILayout.Toggle(t.enableGrapple, " Enabled");
+            PrototypeInput.GrappleButton = EnumButton("Grapple Button", PrototypeInput.GrappleButton);
             if (t.enableGrapple)
             {
                 t.grappleMode = EnumButton("Mode", t.grappleMode);
@@ -238,12 +247,12 @@ namespace Televised.Prototyping.Shared
                 t.grappleAimAssistAngle = Slider("Aim Assist Angle", t.grappleAimAssistAngle, 0f, 30f);
                 t.grappleCooldown = Slider("Cooldown", t.grappleCooldown, 0f, 1f);
                 t.grappleLatchRefreshesAirJumps = GUILayout.Toggle(t.grappleLatchRefreshesAirJumps, " Latch refreshes air jumps");
-                t.grappleSwingAmount = Slider(t.grappleMode == GrappleMode.SwingPull ? "Free Swing Amount (LMB released)" : "Swing Amount (1 = free)",
+                t.grappleSwingAmount = Slider(t.grappleMode == GrappleMode.SwingPull ? $"Free Swing Amount ({GrappleBtn} released)" : "Swing Amount (1 = free)",
                     t.grappleSwingAmount, 0f, 1f);
                 t.grappleSwingDamping = Slider("Swing Damping at 0", t.grappleSwingDamping, 0f, 30f);
                 if (t.grappleMode == GrappleMode.SwingPull)
                 {
-                    t.grappleSwingPullReelSpeed = Slider("Reel-In Speed (hold LMB)", t.grappleSwingPullReelSpeed, 0f, 30f);
+                    t.grappleSwingPullReelSpeed = Slider($"Reel-In Speed (hold {GrappleBtn})", t.grappleSwingPullReelSpeed, 0f, 30f);
                     t.grappleSwingPullSwingAmount = Slider("Swing While Reeling", t.grappleSwingPullSwingAmount, 0f, 1f);
                     t.grappleReelSpeed = Slider("Rope Adjust Speed (W/S, released)", t.grappleReelSpeed, 0f, 15f);
                 }
@@ -258,7 +267,6 @@ namespace Televised.Prototyping.Shared
                 else
                 {
                     t.grappleReelSpeed = Slider("Reel Speed (W/S)", t.grappleReelSpeed, 0f, 15f);
-                    t.grappleMinRopeLength = Slider("Min Rope Length", t.grappleMinRopeLength, 0.1f, 5f);
                 }
             }
 

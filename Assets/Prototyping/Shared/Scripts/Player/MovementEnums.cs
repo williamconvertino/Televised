@@ -37,6 +37,22 @@ namespace Televised.Prototyping.Shared
         Magnetic
     }
 
+    /// <summary>What happens when crawling would take the player onto a surface steeper than maxSurfaceAngle.</summary>
+    public enum SteepSurfaceBehavior
+    {
+        /// <summary>Crawling stops at the limit, like hitting a wall.</summary>
+        Stop,
+        /// <summary>The player lets go and falls off.</summary>
+        FallOff
+    }
+
+    /// <summary>Which mouse button fires the grapple leg. The other button cancels it.</summary>
+    public enum GrappleMouseButton
+    {
+        Right,
+        Left
+    }
+
     /// <summary>How the attachment controller picks among several valid candidates.</summary>
     public enum CandidateSelectionMode
     {
@@ -77,7 +93,7 @@ namespace Televised.Prototyping.Shared
         /// <summary>Rope constraint: swing from the anchor while the button is held; W/S reel in/out.</summary>
         Swing,
         /// <summary>
-        /// Hybrid rope with gravity on. Hold LMB to reel in (swinging slightly, set by grappleSwingPullSwingAmount);
+        /// Hybrid rope with gravity on. Hold the grapple button to reel in (swinging slightly, set by grappleSwingPullSwingAmount);
         /// release to swing freely on the rope (grappleSwingAmount; W/S adjust length). Space lets go.
         /// </summary>
         SwingPull

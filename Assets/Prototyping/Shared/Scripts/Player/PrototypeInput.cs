@@ -49,19 +49,55 @@ namespace Televised.Prototyping.Shared
         /// <summary>Set by UI (the debug panel) while the pointer is over it, so clicks don't fire the grapple.</summary>
         public static bool PointerBlocked { get; set; }
 
+        const string GrappleButtonPref = "Televised.Prototyping.GrappleButton";
+        static GrappleMouseButton? s_grappleButton;
+
+        /// <summary>
+        /// Which mouse button fires the grapple (the other one cancels). Default: right. Changed from the debug
+        /// panel and remembered between sessions (PlayerPrefs).
+        /// </summary>
+        public static GrappleMouseButton GrappleButton
+        {
+            get
+            {
+                s_grappleButton ??= (GrappleMouseButton)PlayerPrefs.GetInt(GrappleButtonPref, (int)GrappleMouseButton.Right);
+                return s_grappleButton.Value;
+            }
+            set
+            {
+                if (s_grappleButton == value) return;
+                s_grappleButton = value;
+                PlayerPrefs.SetInt(GrappleButtonPref, (int)value);
+            }
+        }
+
+        /// <summary>Human-readable names for hints, e.g. "Right-click" / "right mouse".</summary>
+        public static string GrappleClickName => GrappleButton == GrappleMouseButton.Right ? "Right-click" : "Left-click";
+        public static string GrappleCancelClickName => GrappleButton == GrappleMouseButton.Right ? "Left-click" : "Right-click";
+        public static string GrappleButtonName => GrappleButton == GrappleMouseButton.Right ? "right mouse" : "left mouse";
+
+        /// <summary>Replaces {grappleClick}, {cancelClick} and {grappleButton} in hint text with the current binding.</summary>
+        public static string FormatBindings(string text) => string.IsNullOrEmpty(text) ? text : text
+            .Replace("{grappleClick}", GrappleClickName)
+            .Replace("{cancelClick}", GrappleCancelClickName)
+            .Replace("{grappleButton}", GrappleButtonName);
+
+        static UnityEngine.InputSystem.Controls.ButtonControl MouseButton(Mouse m, bool grapple) =>
+            (GrappleButton == GrappleMouseButton.Right) == grapple ? m.rightButton : m.leftButton;
+
         public static bool GrapplePressed
         {
-            get { var m = Mouse.current; return m != null && !PointerBlocked && m.leftButton.wasPressedThisFrame; }
+            get { var m = Mouse.current; return m != null && !PointerBlocked && MouseButton(m, true).wasPressedThisFrame; }
         }
 
         public static bool GrappleHeld
         {
-            get { var m = Mouse.current; return m != null && m.leftButton.isPressed; }
+            get { var m = Mouse.current; return m != null && MouseButton(m, true).isPressed; }
         }
 
         public static bool GrappleCancelPressed
         {
-            get { var m = Mouse.current; return m != null && !PointerBlocked && m.rightButton.wasPressedThisFrame; }
+            get { var m = Mouse.current; return m != null && !PointerBlocked && MouseButton(m, false).wasPressedThisFrame; }
         }
 
         public static float ScrollDelta

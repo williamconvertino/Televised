@@ -27,10 +27,13 @@ MonoBehaviour:
   screenAmbiguityBias: 0.25
   minInputAlignment: 0.1
   invertSurfaceRelative: 0
+  maxSurfaceAngle: 180
+  steepSurfaceBehavior: 0
   jumpSpeed: 9
   inheritSurfaceVelocity: 0
   inheritPlatformVelocity: 1
   jumpBufferTime: 0.1
+  landingJumpDelay: 0.04236641
   maxJumpAimAngle: 55
   cursorIntoSurface: 1
   cursorMinSurfaceAngle: 10
@@ -62,7 +65,6 @@ MonoBehaviour:
   grappleSwingPullReelSpeed: 9
   grappleSwingPullSwingAmount: 0.35
   grappleReelSpeed: 4
-  grappleMinRopeLength: 1
   normalSampleSpacing: 0.45
   normalSmoothing: 0.06
   nearestSurfaceRange: 7
