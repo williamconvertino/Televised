@@ -86,8 +86,17 @@ namespace Televised.Prototyping.Shared
         /// <summary>Fired whenever the player is respawned (kill plane, or anyone calling Respawn()).</summary>
         public event Action Respawned;
 
+        /// <summary>
+        /// True while any external system holds a movement lock (see <see cref="AddMovementLock"/>). While locked the
+        /// player ignores movement, jump and grapple input: attached it stays at its path position (still riding a
+        /// moving surface), airborne it hangs in place. Tuning values are never touched.
+        /// </summary>
+        public bool IsMovementLocked => _movementLocks.Count > 0;
+
         public int AirJumpsUsed => _airJumpsUsed;
-        public int AirJumpsRemaining => tuning.enableAirJumps ? Mathf.Max(0, tuning.airJumpCount - _airJumpsUsed) : 0;
+        public int AirJumpsRemaining => (tuning.enableAirJumps ? Mathf.Max(0, tuning.airJumpCount - _airJumpsUsed) : 0) + _bonusAirJumps;
+        /// <summary>Extra air jumps granted by other systems (see <see cref="GrantBonusAirJump"/>).</summary>
+        public int BonusAirJumps => _bonusAirJumps;
         /// <summary>Direction an air jump would launch in right now (for debug preview).</summary>
         public Vector2 AirJumpPreviewDirection =>
             jumpResolver != null ? jumpResolver.ResolveAirJump(PrototypeInput.MoveVector, AimDirection, tuning) : Vector2.up;
@@ -106,8 +115,10 @@ namespace Televised.Prototyping.Shared
         bool _landingJumpQueued; // pressed during landingJumpDelay; fires when it ends
         Vector2 _platformVelocity;
         int _airJumpsUsed;
+        int _bonusAirJumps;
         MovementTuning _tuningAsset;
         MovementTuning _runtimeTuning;
+        readonly System.Collections.Generic.HashSet<object> _movementLocks = new System.Collections.Generic.HashSet<object>();
 
         // ---------------------------------------------------------------- lifecycle
 
@@ -213,17 +224,69 @@ namespace Televised.Prototyping.Shared
             Vector2 toCursor = CursorWorld - _position;
             if (toCursor.sqrMagnitude > 1e-6f) AimDirection = toCursor.normalized;
 
-            if (PrototypeInput.JumpPressed) _jumpBuffer = tuning.jumpBufferTime + 1e-4f;
-            else _jumpBuffer -= dt;
+            if (IsMovementLocked)
+            {
+                _jumpBuffer = 0f;
+                _landingJumpQueued = false;
+                UpdateLocked(dt);
+            }
+            else
+            {
+                if (PrototypeInput.JumpPressed) _jumpBuffer = tuning.jumpBufferTime + 1e-4f;
+                else _jumpBuffer -= dt;
 
-            grapple.Tick(this, dt);
+                grapple.Tick(this, dt);
 
-            if (State == PlayerMovementState.Attached) UpdateAttached(dt);
-            else UpdateAirborne(dt);
+                if (State == PlayerMovementState.Attached) UpdateAttached(dt);
+                else UpdateAirborne(dt);
+            }
 
             if (_position.y < killY) Respawn();
 
             transform.position = new Vector3(_position.x, _position.y, transform.position.z);
+        }
+
+        // ---------------------------------------------------------------- external movement lock
+
+        /// <summary>Freeze the player's movement until the same owner calls <see cref="RemoveMovementLock"/>.</summary>
+        public void AddMovementLock(object owner)
+        {
+            if (owner != null) _movementLocks.Add(owner);
+        }
+
+        public void RemoveMovementLock(object owner)
+        {
+            if (owner != null) _movementLocks.Remove(owner);
+        }
+
+        public void ClearMovementLocks() => _movementLocks.Clear();
+
+        /// <summary>
+        /// Grant an extra air jump usable even when air jumps are disabled in the tuning (uses the air-jump speed and
+        /// direction settings). Lost on landing or respawn.
+        /// </summary>
+        public void GrantBonusAirJump(int count = 1) => _bonusAirJumps += Mathf.Max(0, count);
+
+        void UpdateLocked(float dt)
+        {
+            Vector2 prevPos = _position;
+            if (State == PlayerMovementState.Attached && _surface != null && _surface.isActiveAndEnabled)
+            {
+                // Hold the path position but keep riding the surface if it moves.
+                float r = tuning.playerRadius;
+                SurfaceSample cur = _surface.SampleAt(_pathPos);
+                _platformVelocity = ((cur.point + cur.normal * r) - (_sample.point + _sample.normal * r)) / dt;
+                _surfaceSpeed = 0f;
+                _sample = cur;
+                UpdateNormals(dt, false);
+                _attachOffset *= Mathf.Exp(-tuning.surfaceSnapStrength * dt);
+                _position = cur.point + cur.normal * r + _attachOffset;
+                _velocity = (_position - prevPos) / dt;
+            }
+            else
+            {
+                _velocity = Vector2.zero; // hang in the air
+            }
         }
 
         // ---------------------------------------------------------------- attached
@@ -463,12 +526,13 @@ namespace Televised.Prototyping.Shared
                 releasedGrapple = true;
             }
 
-            bool canAirJump = tuning.enableAirJumps && _airJumpsUsed < tuning.airJumpCount &&
-                              TimeSinceDetach >= tuning.airJumpMinDelay;
+            bool normalAirJump = tuning.enableAirJumps && _airJumpsUsed < tuning.airJumpCount;
+            bool canAirJump = (normalAirJump || _bonusAirJumps > 0) && TimeSinceDetach >= tuning.airJumpMinDelay;
             if (canAirJump && !LandingImminent())
             {
                 _jumpBuffer = 0f;
-                _airJumpsUsed++;
+                if (normalAirJump) _airJumpsUsed++;
+                else _bonusAirJumps--;
                 Vector2 dir = jumpResolver.ResolveAirJump(PrototypeInput.MoveVector, AimDirection, tuning);
                 // Replace vertical velocity (consistent height even when falling fast); keep some horizontal momentum.
                 _velocity = dir * tuning.airJumpSpeed + new Vector2(_velocity.x * tuning.airJumpMomentumKeep, 0f);
@@ -540,6 +604,7 @@ namespace Televised.Prototyping.Shared
                 _attachTime = Time.time;
                 _landingJumpQueued = false;
                 _airJumpsUsed = 0;
+                _bonusAirJumps = 0;
                 grapple.NotifyPlayerAttached();
             }
 
@@ -567,6 +632,8 @@ namespace Televised.Prototyping.Shared
         {
             _position = position;
             _airJumpsUsed = 0;
+            _bonusAirJumps = 0;
+            _movementLocks.Clear();
             if (grapple != null) grapple.ResetImmediate();
             EnterAirborne(Vector2.zero, null);
             transform.position = new Vector3(_position.x, _position.y, transform.position.z);

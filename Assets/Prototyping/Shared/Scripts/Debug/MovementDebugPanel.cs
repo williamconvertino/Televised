@@ -16,9 +16,15 @@ namespace Televised.Prototyping.Shared
         [SerializeField] ProceduralLegRig legRig;
         [SerializeField] bool panelVisible = true;
         [SerializeField] bool showSurfaceLabels = true;
+        [Tooltip("Show the status box and key hints even while the tuning panel is closed. Off: only with the panel " +
+                 "(the status box blocks clicks under it, which other prototypes may need).")]
+        [SerializeField] bool alwaysShowStatus = true;
         [SerializeField, Range(0.5f, 3f)] float uiScale = 1f;
 
-        const float PanelWidth = 300f;
+        public const float PanelWidth = 300f;
+        /// <summary>Whether the tuning panel (right side) is showing. Other overlays lay themselves out around it.</summary>
+        public bool PanelVisible { get => panelVisible; set => panelVisible = value; }
+        public float UiScale => uiScale;
         Vector2 _scroll;
         GUIStyle _box, _label, _header, _worldLabel;
 
@@ -41,10 +47,12 @@ namespace Televised.Prototyping.Shared
             Vector2 mouse = PrototypeInput.MouseScreen;
             Vector2 gui = new Vector2(mouse.x, Screen.height - mouse.y) / uiScale;
             float screenW = Screen.width / uiScale, screenH = Screen.height / uiScale;
-            bool overStatus = new Rect(10, 10, 360, 300).Contains(gui);
+            bool overStatus = StatusVisible && new Rect(10, 10, 360, 300).Contains(gui);
             bool overPanel = panelVisible && new Rect(screenW - PanelWidth - 10, 10, PanelWidth, screenH - 80).Contains(gui);
             PrototypeInput.PointerBlocked = overStatus || overPanel;
         }
+
+        bool StatusVisible => alwaysShowStatus || panelVisible;
 
         static T Next<T>(T value) where T : Enum
         {
@@ -80,7 +88,9 @@ namespace Televised.Prototyping.Shared
 
             if (showSurfaceLabels) DrawSurfaceLabels(screenH);
 
-            // ---- status (always visible)
+            if (!StatusVisible) return;
+
+            // ---- status
             GUILayout.BeginArea(new Rect(10, 10, 360, 300), _box);
             GUILayout.Label(StatusText(t), _label);
             GUILayout.EndArea();

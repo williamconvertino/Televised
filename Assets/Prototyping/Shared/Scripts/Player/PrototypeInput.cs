@@ -95,9 +95,19 @@ namespace Televised.Prototyping.Shared
             get { var m = Mouse.current; return m != null && MouseButton(m, true).isPressed; }
         }
 
+        /// <summary>
+        /// Set by another system that has claimed the grapple's cancel button for itself (the combat prototype fires
+        /// weapons with it). The grapple can then still be let go with Space.
+        /// </summary>
+        public static bool GrappleCancelSuppressed { get; set; }
+
         public static bool GrappleCancelPressed
         {
-            get { var m = Mouse.current; return m != null && !PointerBlocked && MouseButton(m, false).wasPressedThisFrame; }
+            get
+            {
+                var m = Mouse.current;
+                return m != null && !PointerBlocked && !GrappleCancelSuppressed && MouseButton(m, false).wasPressedThisFrame;
+            }
         }
 
         public static float ScrollDelta
