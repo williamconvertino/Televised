@@ -1,0 +1,576 @@
+{
+  "source": "ArtSource/Vector/Characters/Hungry",
+  "canvas": [
+    0,
+    0,
+    1200,
+    1000
+  ],
+  "origin": [
+    600,
+    500
+  ],
+  "scale": 2,
+  "unitsPerWorldUnit": 150,
+  "pixelsPerUnit": 300,
+  "parts": [
+    {
+      "name": "hungry_face",
+      "rect": [
+        314,
+        200.5,
+        572,
+        570
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "position": {
+        "x": 0,
+        "y": 0.0967
+      },
+      "order": 0
+    },
+    {
+      "name": "hungry_eye_L",
+      "rect": [
+        405,
+        304.5,
+        154,
+        191
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "position": {
+        "x": -0.7867,
+        "y": 0.6667
+      },
+      "order": 1
+    },
+    {
+      "name": "hungry_eye_R",
+      "rect": [
+        641,
+        304.5,
+        154,
+        191
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "position": {
+        "x": 0.7867,
+        "y": 0.6667
+      },
+      "order": 2
+    },
+    {
+      "name": "hungry_pupil_L",
+      "rect": [
+        468.5,
+        380.5,
+        47,
+        67
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "position": {
+        "x": -0.72,
+        "y": 0.5733
+      },
+      "order": 3
+    },
+    {
+      "name": "hungry_pupil_R",
+      "rect": [
+        684.5,
+        380.5,
+        47,
+        67
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "position": {
+        "x": 0.72,
+        "y": 0.5733
+      },
+      "order": 4
+    },
+    {
+      "name": "hungry_pupil_L_arc",
+      "rect": [
+        457.5,
+        395.5,
+        69,
+        33
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.4394
+      },
+      "position": {
+        "x": -0.72,
+        "y": 0.5733
+      },
+      "order": 5
+    },
+    {
+      "name": "hungry_pupil_R_arc",
+      "rect": [
+        673.5,
+        395.5,
+        69,
+        33
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.4394
+      },
+      "position": {
+        "x": 0.72,
+        "y": 0.5733
+      },
+      "order": 6
+    },
+    {
+      "name": "hungry_lid_L",
+      "rect": [
+        367,
+        38,
+        230,
+        276
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.0507
+      },
+      "position": {
+        "x": -0.7867,
+        "y": 1.3333
+      },
+      "order": 7
+    },
+    {
+      "name": "hungry_lid_R",
+      "rect": [
+        603,
+        38,
+        230,
+        276
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.0507
+      },
+      "position": {
+        "x": 0.7867,
+        "y": 1.3333
+      },
+      "order": 8
+    },
+    {
+      "name": "hungry_cheek_L",
+      "rect": [
+        368,
+        488,
+        228,
+        234
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.9487
+      },
+      "position": {
+        "x": -0.7867,
+        "y": 0
+      },
+      "order": 9
+    },
+    {
+      "name": "hungry_cheek_R",
+      "rect": [
+        604,
+        488,
+        228,
+        234
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.9487
+      },
+      "position": {
+        "x": 0.7867,
+        "y": 0
+      },
+      "order": 10
+    },
+    {
+      "name": "hungry_mouth_grin",
+      "rect": [
+        308,
+        336.5,
+        584,
+        391
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.3772
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 11
+    },
+    {
+      "name": "hungry_mouth_grinwide",
+      "rect": [
+        282,
+        312.5,
+        636,
+        434
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.3836
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 12
+    },
+    {
+      "name": "hungry_mouth_smirk",
+      "rect": [
+        313.5,
+        402,
+        573,
+        249.5
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.2866
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 13
+    },
+    {
+      "name": "hungry_mouth_smirkside",
+      "rect": [
+        362.5,
+        339,
+        539,
+        292
+      ],
+      "pivot": {
+        "x": 0.4406,
+        "y": 0.1747
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 14
+    },
+    {
+      "name": "hungry_mouth_smile",
+      "rect": [
+        346,
+        425.5,
+        508,
+        336.5
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5409
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 15
+    },
+    {
+      "name": "hungry_mouth_frown",
+      "rect": [
+        377,
+        547.5,
+        446,
+        143.5
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.7735
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 16
+    },
+    {
+      "name": "hungry_mouth_frownopen",
+      "rect": [
+        379,
+        552.5,
+        442,
+        210.5
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.8694
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 17
+    },
+    {
+      "name": "hungry_mouth_snarl",
+      "rect": [
+        334.5,
+        517,
+        531,
+        128.5
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5097
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 18
+    },
+    {
+      "name": "hungry_mouth_roar",
+      "rect": [
+        320.5,
+        500.5,
+        559,
+        295.5
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.731
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 19
+    },
+    {
+      "name": "hungry_mouth_wavy",
+      "rect": [
+        413,
+        556,
+        376,
+        101.5
+      ],
+      "pivot": {
+        "x": 0.4973,
+        "y": 0.7635
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 20
+    },
+    {
+      "name": "hungry_mouth_o",
+      "rect": [
+        523.5,
+        559.5,
+        153,
+        181
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.8867
+      },
+      "position": {
+        "x": 0,
+        "y": -0.5333
+      },
+      "order": 21
+    },
+    {
+      "name": "hungry_nose",
+      "rect": [
+        516,
+        439,
+        168,
+        132
+      ],
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "position": {
+        "x": 0,
+        "y": -0.0333
+      },
+      "order": 22
+    },
+    {
+      "name": "hungry_brow_L",
+      "rect": [
+        277,
+        155,
+        318,
+        248
+      ],
+      "pivot": {
+        "x": 0.8774,
+        "y": 0.125
+      },
+      "position": {
+        "x": -0.2933,
+        "y": 0.8533
+      },
+      "order": 23
+    },
+    {
+      "name": "hungry_brow_R",
+      "rect": [
+        605,
+        155,
+        318,
+        248
+      ],
+      "pivot": {
+        "x": 0.1226,
+        "y": 0.125
+      },
+      "position": {
+        "x": 0.2933,
+        "y": 0.8533
+      },
+      "order": 24
+    },
+    {
+      "name": "hungry_brow_L_soft",
+      "rect": [
+        315,
+        234,
+        272,
+        113
+      ],
+      "pivot": {
+        "x": 0.8934,
+        "y": 0.2212
+      },
+      "position": {
+        "x": -0.28,
+        "y": 1.1867
+      },
+      "order": 25
+    },
+    {
+      "name": "hungry_brow_R_soft",
+      "rect": [
+        613,
+        234,
+        272,
+        113
+      ],
+      "pivot": {
+        "x": 0.1066,
+        "y": 0.2212
+      },
+      "position": {
+        "x": 0.28,
+        "y": 1.1867
+      },
+      "order": 26
+    },
+    {
+      "name": "hungry_glove_open",
+      "rect": [
+        758,
+        462,
+        323,
+        395.5
+      ],
+      "pivot": {
+        "x": 0.7802,
+        "y": 0.1454
+      },
+      "position": {
+        "x": 2.7333,
+        "y": -2
+      },
+      "order": 27
+    },
+    {
+      "name": "hungry_glove_claw",
+      "rect": [
+        788.5,
+        472.5,
+        292.5,
+        385
+      ],
+      "pivot": {
+        "x": 0.7573,
+        "y": 0.1494
+      },
+      "position": {
+        "x": 2.7333,
+        "y": -2
+      },
+      "order": 28
+    },
+    {
+      "name": "hungry_glove_point",
+      "rect": [
+        781.5,
+        471.5,
+        299.5,
+        386
+      ],
+      "pivot": {
+        "x": 0.7629,
+        "y": 0.149
+      },
+      "position": {
+        "x": 2.7333,
+        "y": -2
+      },
+      "order": 29
+    },
+    {
+      "name": "hungry_glove_fist",
+      "rect": [
+        840,
+        569.5,
+        241,
+        288
+      ],
+      "pivot": {
+        "x": 0.7054,
+        "y": 0.1997
+      },
+      "position": {
+        "x": 2.7333,
+        "y": -2
+      },
+      "order": 30
+    }
+  ]
+}

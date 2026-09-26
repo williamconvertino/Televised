@@ -1,0 +1,16 @@
+{
+  "scale": 2,
+  "unitsPerWorldUnit": 150,
+  "layers": [
+    "hungry_face",
+    "hungry_eye_L", "hungry_eye_R",
+    "hungry_pupil_L", "hungry_pupil_R", "hungry_pupil_L_arc", "hungry_pupil_R_arc",
+    "hungry_lid_L", "hungry_lid_R", "hungry_cheek_L", "hungry_cheek_R",
+    "hungry_mouth_grin", "hungry_mouth_grinwide", "hungry_mouth_smirk", "hungry_mouth_smirkside", "hungry_mouth_smile",
+    "hungry_mouth_frown", "hungry_mouth_frownopen", "hungry_mouth_snarl", "hungry_mouth_roar", "hungry_mouth_wavy",
+    "hungry_mouth_o",
+    "hungry_nose",
+    "hungry_brow_L", "hungry_brow_R", "hungry_brow_L_soft", "hungry_brow_R_soft",
+    "hungry_glove_open", "hungry_glove_claw", "hungry_glove_point", "hungry_glove_fist"
+  ]
+}

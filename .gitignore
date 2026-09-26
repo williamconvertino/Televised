@@ -14,7 +14,15 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
-/Assets/Concept Art/
+
+# Art pipeline (see ART_PIPELINE.md): source art stays local. Only SPEC.md/DECISIONS.md notes
+# and export.json settings under ArtSource are tracked. Exported sprites in Assets/Art are tracked.
+/ArtSource/**
+!/ArtSource/**/
+!/ArtSource/**/*.md
+!/ArtSource/Vector/**/export.json
+/ArtSource/AI_Workspace/**/*.md
+/Tools/ArtPipeline/node_modules/
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
