@@ -23,6 +23,7 @@
 !/ArtSource/Vector/**/export.json
 /ArtSource/AI_Workspace/**/*.md
 /Tools/ArtPipeline/node_modules/
+/ArtSource/3D
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
