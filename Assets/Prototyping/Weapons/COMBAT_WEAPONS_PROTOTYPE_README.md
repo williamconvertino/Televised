@@ -56,18 +56,20 @@ The eye can use a variety of weapons.
 
 Current prototype weapon list:
 
-1. Eye Beam
-2. Heavy Shot
-3. Burst Shot
-4. Sniper Shot
+1. Simple Shot (plain straight projectile, the baseline)
+2. Burst Shot
+3. Eye Beam
+4. Heavy Shot
 5. Flamethrower
-6. Holy Beam
-7. Four-Directional Holy Beam variant
-8. Flail
-9. Chain / Skewer weapon
-10. Short-Ranged Eye Pulse
+6. Short-Ranged Eye Pulse
+7. Sniper Shot
+8. Holy Beam
+9. Four-Directional Holy Beam variant
+10. Chain / Skewer weapon
 
-There should deliberately **not** be a generic semiautomatic "normal shot" weapon or a traditional full-auto gun in the initial prototype.
+Flail is currently disabled (its component is off and it isn't in the weapon list).
+
+Simple Shot is a plain baseline for comparison; there should still not be a traditional full-auto gun in the initial prototype.
 
 The weapon set should test substantially different attack geometries and movement interactions.
 

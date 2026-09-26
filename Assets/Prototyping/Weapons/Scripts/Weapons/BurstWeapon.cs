@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Televised.Prototyping.Weapons
 {
     /// <summary>
-    /// Weapon 3: one trigger pull fires several medium projectiles in sequence, each with random spread and a light
+    /// Weapon 2: one trigger pull fires several medium projectiles in sequence, each with random spread and a light
     /// aim assist that bends the shot part of the way toward a nearby target (never guaranteeing a hit).
     /// </summary>
     public class BurstWeapon : PrototypeWeapon

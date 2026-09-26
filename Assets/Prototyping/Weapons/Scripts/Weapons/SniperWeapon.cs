@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Televised.Prototyping.Weapons
 {
     /// <summary>
-    /// Weapon 4: very fast, precise, high-damage shot with strong piercing and per-pierce damage falloff, and no
+    /// Weapon 7: very fast, precise, high-damage shot with strong piercing and per-pierce damage falloff, and no
     /// distance falloff (same first-target damage at any range). A real projectile by default; Hitscan resolves the
     /// whole range on the frame it's fired.
     /// </summary>

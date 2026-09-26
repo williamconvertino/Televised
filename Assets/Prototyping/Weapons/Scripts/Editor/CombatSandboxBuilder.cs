@@ -217,18 +217,20 @@ namespace Televised.Prototyping.Weapons.EditorTools
             weaponsGo.transform.SetParent(combat.transform, false);
             var weapons = new List<PrototypeWeapon>
             {
+                weaponsGo.AddComponent<SimpleShotWeapon>(),
+                weaponsGo.AddComponent<BurstWeapon>(),
                 weaponsGo.AddComponent<EyeBeamWeapon>(),
                 weaponsGo.AddComponent<HeavyShotWeapon>(),
-                weaponsGo.AddComponent<BurstWeapon>(),
-                weaponsGo.AddComponent<SniperWeapon>(),
                 weaponsGo.AddComponent<FlamethrowerWeapon>(),
-                weaponsGo.AddComponent<HolyBeamWeapon>(),
-                weaponsGo.AddComponent<HolyBeamWeapon>(),
-                weaponsGo.AddComponent<FlailWeapon>(),
-                weaponsGo.AddComponent<ChainWeapon>(),
                 weaponsGo.AddComponent<EyePulseWeapon>(),
+                weaponsGo.AddComponent<SniperWeapon>(),
+                weaponsGo.AddComponent<HolyBeamWeapon>(),
+                weaponsGo.AddComponent<HolyBeamWeapon>(),
+                weaponsGo.AddComponent<ChainWeapon>(),
             };
-            var crossSo = new SerializedObject(weapons[6]);
+            // Flail is disabled for now: kept on the object for its tuning, but not selectable.
+            weaponsGo.AddComponent<FlailWeapon>().enabled = false;
+            var crossSo = new SerializedObject(weapons[8]);
             crossSo.FindProperty("displayName").stringValue = "Cross Holy Beam";
             crossSo.FindProperty("settings.mode").enumValueIndex = (int)HolyBeamMode.Cross;
             crossSo.FindProperty("settings.cooldown").floatValue = 1f;

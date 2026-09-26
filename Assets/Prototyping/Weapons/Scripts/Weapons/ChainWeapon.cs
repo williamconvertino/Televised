@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Televised.Prototyping.Weapons
 {
     /// <summary>
-    /// Weapon 9: an offensive chain.
+    /// Weapon 10: an offensive chain.
     ///   Press:   the chain shoots toward the cursor and skewers the enemies it passes (outgoing damage).
     ///   Hold:    it becomes a loose, heavy rope (verlet) tethering the skewered enemies. Moving, jumping and the
     ///            cursor tug swing them around, and slamming them into terrain deals wall-slam damage.

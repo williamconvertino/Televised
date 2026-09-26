@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Televised.Prototyping.Weapons
 {
     /// <summary>
-    /// Weapon 2: a large, slow, gravity-affected projectile with high damage and knockback and a long cooldown.
+    /// Weapon 4: a large, slow, gravity-affected projectile with high damage and knockback and a long cooldown.
     /// Range is total distance traveled along the arc.
     /// </summary>
     public class HeavyShotWeapon : PrototypeWeapon

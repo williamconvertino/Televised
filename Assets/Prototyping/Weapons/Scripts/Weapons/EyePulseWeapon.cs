@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Televised.Prototyping.Weapons
 {
     /// <summary>
-    /// Weapon 10: a short radial "get away from me" burst centred on the player root. The ring expands over the
+    /// Weapon 6: a short radial "get away from me" burst centred on the player root. The ring expands over the
     /// active duration and hits each enemy once as it passes; damage falls off radially (touching the eye = full).
     /// </summary>
     public class EyePulseWeapon : PrototypeWeapon

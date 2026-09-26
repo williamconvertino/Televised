@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Televised.Prototyping.Weapons
 {
     /// <summary>
-    /// Weapon 1: a charged wide beam from the eye toward the cursor. Charge, then a short, heavy blast that hits
+    /// Weapon 3: a charged wide beam from the eye toward the cursor. Charge, then a short, heavy blast that hits
     /// everything along it. Terrain cuts off the parts of the beam it covers. Movement lock is optional (off by
     /// default), so you can keep crawling and jumping while it charges.
     /// </summary>

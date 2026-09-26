@@ -6,7 +6,8 @@ using UnityEngine;
 namespace Televised.Prototyping.Weapons
 {
     /// <summary>
-    /// Weapon 8: a weight on a rope tied to the player root. It's driven by the player's movement (jumping, falling,
+    /// Disabled for now (component off, not in the weapon list).
+    /// A weight on a rope tied to the player root. It's driven by the player's movement (jumping, falling,
     /// crawling round curves, grappling); damage scales with the head's speed into the enemy.
     /// Physics is a simple verlet-free point mass with a rope (or rod) constraint, sub-stepped. Arcade Assistance
     /// keeps it orbiting instead of hanging inert; fire whips it toward the cursor, holding steers it.

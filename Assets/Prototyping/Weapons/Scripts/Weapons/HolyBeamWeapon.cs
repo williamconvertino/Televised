@@ -12,7 +12,7 @@ namespace Televised.Prototyping.Weapons
     }
 
     /// <summary>
-    /// Weapons 6 and 7: world-aligned beams out of the eye (up + down, left + right, or both as a cross).
+    /// Weapons 8 and 9: world-aligned beams out of the eye (up + down, left + right, or both as a cross).
     /// A positioning weapon: charge, lock in place, fire. Each arm is a lane beam, so surfaces contain it and split
     /// it; you can't hit through a floor or wall. Optionally grants an air jump afterwards (jump-beam-jump).
     /// The same component serves as "Holy Beam" and "Cross Holy Beam" with a different default mode.
